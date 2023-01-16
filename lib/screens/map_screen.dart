@@ -39,7 +39,7 @@ class _MapScreenState extends State<MapScreen> {
           }
           return BlocBuilder<MapBloc, MapState>( // MapBloc
             builder: (context, mapState) {
-
+              
               Map<String, Polyline> polylines = Map.from( mapState.polylines );
               if ( !mapState.showMyRoute ) {
                 polylines.removeWhere((key, value) => key == 'myRoute');
@@ -52,9 +52,10 @@ class _MapScreenState extends State<MapScreen> {
                       initialLocation: locationState.lastKnownLocation!,
                       polylines: polylines.values.toSet(), 
                       markers: mapState.markers.values.toSet(),
-                    ),
-                    // const SearchBar(), 
-                    // const ManualMarker()        
+                    ),                    
+                    const SearchBar2(), 
+                    // const ManualMarker()     
+                    // const BtnPlanesViaje()   
                   ]  
                 ),
               );
@@ -71,8 +72,10 @@ class _MapScreenState extends State<MapScreen> {
           return Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: const [          
-                BtnRecorridoMicro(),
+                BtnRecorridoMicro(),                
                 // BtnFollowUser(),
+                BtnPlanificadorViaje(),
+                BtnPlanesViaje(),
                 BtnCurrentLocation(),
             ],
           );

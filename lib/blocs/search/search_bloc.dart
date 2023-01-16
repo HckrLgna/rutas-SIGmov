@@ -47,7 +47,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       endPlace : endPlace
     );
   }
-
+  
   Future getPlacesByQuery( LatLng proximity, String query ) async {
     final newPlaces = await trafficService.getResultsByQuery(proximity, query);
     add( OnNewPlacesFoundEvent( newPlaces ) );

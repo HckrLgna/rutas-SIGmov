@@ -30,7 +30,9 @@ class Punto {
         required this.orden,
         required this.latitud,
         required this.longitud,
-        required this.recorridoId,        
+        required this.recorridoId,
+        required this.createdAt,
+        required this.updatedAt,
     });
 
     final int id;
@@ -38,7 +40,8 @@ class Punto {
     final String latitud;
     final String longitud;
     final int recorridoId;
-    
+    final DateTime createdAt;
+    final DateTime updatedAt;
 
     factory Punto.fromJson(String str) => Punto.fromMap(json.decode(str));
 
@@ -49,7 +52,9 @@ class Punto {
         orden: json["orden"],
         latitud: json["latitud"],
         longitud: json["longitud"],
-        recorridoId: json["recorrido_id"],       
+        recorridoId: json["recorrido_id"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
     );
 
     Map<String, dynamic> toMap() => {
@@ -57,6 +62,8 @@ class Punto {
         "orden": orden,
         "latitud": latitud,
         "longitud": longitud,
-        "recorrido_id": recorridoId,        
+        "recorrido_id": recorridoId,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
     };
 }

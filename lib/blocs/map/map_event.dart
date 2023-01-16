@@ -20,6 +20,14 @@ class UpdateUserPolylineEvent extends MapEvent {
   const UpdateUserPolylineEvent(this.userLocations);
 }
 
+class OnOrigenDestinoTextEvent extends MapEvent {
+  final List<String> origenDestinoText;
+  const OnOrigenDestinoTextEvent( this.origenDestinoText );
+}
+class OnOrigenDestinoCoordEvent extends MapEvent {
+  final List<LatLng> origenDestinoCoord;
+  const OnOrigenDestinoCoordEvent( this.origenDestinoCoord );
+}
 class OnToggleUserRoute extends MapEvent{}
 
 class DisplayPolylinesEvent extends MapEvent {

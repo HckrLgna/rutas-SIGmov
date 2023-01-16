@@ -16,7 +16,7 @@ class SearchBar extends StatelessWidget {
       builder: (context, state) {
         return state.displayManualMarker 
           ? const SizedBox()
-          : FadeInDown(
+          : FadeInLeft(
             duration: const Duration( milliseconds: 300 ),
             child: const _SearchBarBody()
           );
@@ -54,8 +54,8 @@ class _SearchBarBody extends StatelessWidget {
         padding: const EdgeInsets.symmetric( horizontal: 30 ),
         width: double.infinity,
         child: GestureDetector(
-          onTap: () async {                
-            final result = await showSearch(context: context, delegate: SearchDestinationDelegate());
+          onTap: () async {                      
+            final result = await showSearch(context: context, delegate: SearchDestinationDelegate('origen'));
             if ( result == null ) return;
             onSearchResults( context, result );
           },

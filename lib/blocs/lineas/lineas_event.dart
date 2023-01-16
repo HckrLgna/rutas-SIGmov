@@ -7,7 +7,19 @@ abstract class LineasEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class OnShowPlanificador extends LineasEvent {}
+
+class OnHidePlanificador extends LineasEvent {}
+
+class OnCargandoPlanViaje extends LineasEvent {}
+
+class OnPlanViajeCargado extends LineasEvent {}
+
 class OnLineas extends LineasEvent {
   final List<Linea> lineas;
   const OnLineas( this.lineas );
+}
+class OnPlanesViaje extends LineasEvent {
+  final List<PlanViajeRespuesta> planes;
+  const OnPlanesViaje( this.planes );
 }

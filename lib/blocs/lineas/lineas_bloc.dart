@@ -1,7 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+// import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart' show LatLng;
+import 'package:maps_app/blocs/blocs.dart';
 import 'package:maps_app/models/models.dart';
 import 'package:maps_app/services/services.dart';
 
@@ -12,9 +14,15 @@ part 'lineas_state.dart';
 class LineasBloc extends Bloc<LineasEvent, LineasState> {
 
   LineaService lineaService;
+  final MapBloc mapBloc;
 
-  LineasBloc({ required this.lineaService }) : super( const LineasState() ) {   
+  LineasBloc({ required this.lineaService, required this.mapBloc }) : super( const LineasState() ) {   
     on<OnLineas>((event, emit) => emit( state.copyWith( lineas: event.lineas ) ) );
+    on<OnShowPlanificador>((event, emit) => emit( state.copyWith( displayPlanificador: true ) ) );
+    on<OnHidePlanificador>((event, emit) => emit( state.copyWith( displayPlanificador: false ) ) );
+    on<OnCargandoPlanViaje>((event, emit) => emit( state.copyWith( cargandoPlanViaje: true ) ) );
+    on<OnPlanViajeCargado>((event, emit) => emit( state.copyWith( cargandoPlanViaje: false ) ) );
+    on<OnPlanesViaje>((event, emit) => emit( state.copyWith( planesViaje: event.planes ) ) );
   }
 
   Future getLineas() async {
@@ -31,46 +39,11 @@ class LineasBloc extends Bloc<LineasEvent, LineasState> {
     final listaPuntos = resp.puntos.map( ( punto ) => LatLng( double.parse( punto.latitud ) , double.parse( punto.longitud )) ).toList();
     return listaPuntos;
   }
-  
 
-  // Future drawRoutePolyline( RouteDestination destination ) async {
-  //   final myRoute = Polyline(
-  //     polylineId: const PolylineId('route'),
-  //     color: Colors.black,
-  //     width: 5,
-  //     points: destination.points,
-  //     startCap: Cap.roundCap,
-  //     endCap: Cap.roundCap,      
-  //   );
-
-  //   double kms = destination.distance / 1000;
-  //   kms = (kms * 100).floorToDouble();
-  //   kms /= 100;
-
-  //   int tripDuration = (destination.duration / 60).floorToDouble().toInt();
-
-    
-  //   final startMaker = await getStartCustomMarker( tripDuration, 'Mi ubicación' );
-  //   final endMaker = await getEndCustomMarker( kms.toInt(), destination.endPlace.text );
-
-  //   final startMarker = Marker(
-  //     anchor: const Offset(0.1, 1),
-  //     markerId: const MarkerId('start'),
-  //     position: destination.points.first,
-  //     icon: startMaker,      
-  //   );
-
-  //   final endMarker = Marker(
-  //     markerId: const MarkerId('end'),
-  //     position: destination.points.last,
-  //     icon: endMaker,      
-  //   );
-
-  //   final currentPolylines = Map<String, Polyline>.from( state.polylines );
-  //   currentPolylines['route'] = myRoute;
-  //   final currentMarkers = Map<String, Marker>.from( state.markers );
-  //   currentMarkers['start'] = startMarker;
-  //   currentMarkers['end'] = endMarker;
-  //   add( DisplayPolylinesEvent( currentPolylines, currentMarkers ) );    
-  // }
+  Future<void> getPlanViaje() async {
+    LatLng origen = mapBloc.state.origenDestinoCoord!.first;
+    LatLng destino = mapBloc.state.origenDestinoCoord!.last;    
+    final resp = await lineaService.getPlanViaje(origen, destino);    
+    add( OnPlanesViaje( resp ) );    
+  }
 }

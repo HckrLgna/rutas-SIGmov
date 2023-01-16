@@ -7,8 +7,18 @@ import 'package:maps_app/blocs/blocs.dart';
 import 'package:maps_app/models/models.dart';
 class SearchDestinationDelegate extends SearchDelegate<SearchResult>{
 
-  SearchDestinationDelegate():super(
-    searchFieldLabel: 'Buscar...'
+  final String? selectedInput;
+
+  SearchDestinationDelegate( this.selectedInput ):super(
+    searchFieldLabel: 'Buscar...',
+    searchFieldStyle: const TextStyle(
+      fontSize: 20.0, 
+      fontWeight: FontWeight.w400, 
+      letterSpacing: 1.5,  
+      // decoration: TextDecoration.none,
+      decorationThickness: 0.0000001,
+      // decorationColor: Colors.transparent    
+    ),
   );
 
   @override
@@ -58,7 +68,8 @@ class SearchDestinationDelegate extends SearchDelegate<SearchResult>{
                   manual: false,
                   position: LatLng( place.center[1], place.center[0] ),
                   name: place.text,
-                  description: place.placeName
+                  description: place.placeName,
+                  selectedInput: selectedInput
                 );
 
                 searchBloc.add( AddToHistoryEvent(place) );
@@ -80,14 +91,14 @@ class SearchDestinationDelegate extends SearchDelegate<SearchResult>{
 
     return ListView(
       children: [
-        ListTile(
-          leading: const Icon( Icons.location_on_outlined, color: Colors.black ),
-          title: const Text('Colocar la ubicación manualmente', style: TextStyle( color: Colors.black )),
-          onTap: () {          
-            final result = SearchResult( cancel: false, manual: true );
-            close(context, result );
-          }
-        ),
+        // ListTile(
+        //   leading: const Icon( Icons.location_on_outlined, color: Colors.black ),
+        //   title: const Text('Colocar la ubicación manualmente', style: TextStyle( color: Colors.black )),
+        //   onTap: () {          
+        //     final result = SearchResult( cancel: false, manual: true );
+        //     close(context, result );
+        //   }
+        // ),
 
         ...history.map((place) => ListTile(
           title: Text( place.text ),
@@ -99,7 +110,8 @@ class SearchDestinationDelegate extends SearchDelegate<SearchResult>{
               manual: false,
               position: LatLng( place.center[1], place.center[0] ),
               name: place.text,
-              description: place.placeName
+              description: place.placeName,
+              selectedInput: selectedInput
             );            
             close(context, result );
           }

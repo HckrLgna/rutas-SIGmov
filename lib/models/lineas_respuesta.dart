@@ -33,7 +33,9 @@ class Linea {
         required this.telefono,
         required this.mail,
         required this.foto,
-        required this.descripcion,      
+        required this.descripcion,
+        required this.createdAt,
+        required this.updatedAt,
     });
 
     final int id;
@@ -43,7 +45,9 @@ class Linea {
     final String telefono;
     final String mail;
     final String foto;
-    final String descripcion;    
+    final String descripcion;
+    final DateTime createdAt;
+    final DateTime updatedAt;
 
     factory Linea.fromJson(String str) => Linea.fromMap(json.decode(str));
 
@@ -57,7 +61,9 @@ class Linea {
         telefono: json["telefono"],
         mail: json["mail"],
         foto: json["foto"],
-        descripcion: json["descripcion"],        
+        descripcion: json["descripcion"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
     );
 
     Map<String, dynamic> toMap() => {
@@ -68,7 +74,9 @@ class Linea {
         "telefono": telefono,
         "mail": mail,
         "foto": foto,
-        "descripcion": descripcion,        
+        "descripcion": descripcion,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
     };
 }
 
