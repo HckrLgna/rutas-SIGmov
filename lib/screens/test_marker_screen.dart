@@ -14,9 +14,9 @@ class TestMarkerScreen extends StatelessWidget {
           width: 210,
           height: 150,
           child: CustomPaint(
-            painter: StartMarkerPainter(
-              destination: 'Inicio',
-              minutes: 50
+            painter: MicroMarkerPainter(
+              numero: '01',
+              color: 'ABC'
             ),
           ),
         )

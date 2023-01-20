@@ -2,6 +2,8 @@
 
 
 
+export 'package:maps_app/widgets/btn_borrar.dart';
+
 export 'package:maps_app/widgets/btn_planes_viaje.dart';
 
 export 'package:maps_app/widgets/searchbar2.dart';

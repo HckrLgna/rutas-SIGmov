@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_app/blocs/blocs.dart';
 import 'package:maps_app/helpers/helpers.dart';
 import 'package:maps_app/models/models.dart';
@@ -31,7 +32,7 @@ class PlanesViajeScreen extends StatelessWidget {
               children: [
                 const SizedBox(height: 20.0),
                 Expanded(
-                    child: Stack(
+                  child: Stack(
                   children: [
                     Container(
                       margin: const EdgeInsets.only(top: 70),
@@ -41,17 +42,24 @@ class PlanesViajeScreen extends StatelessWidget {
                               topLeft: Radius.circular(40.0),
                               topRight: Radius.circular(40.0))),
                     ),
-                    if ( !state.cargandoPlanViaje )
-                      _RutaCard( planes: state.planesViaje! )
-                    else                           
-                      Center(
-                        child: SpinKitSpinningLines(                          
-                          size: 200,
-                          color: Colors.green[900]!,                          
-                        ),
-                      )    
+                    Column(
+                      children: [
+                        if ( !state.cargandoPlanViaje )...[
+                          // for ( var plan in state.planesViaje! )
+                          //   _RutaCard( planes: plan )
+                          for ( var i = 0; i < state.planesViaje!.length; i++ )
+                            _RutaCard(planes: state.planesViaje![i], transbordos: state.listaTransbordos![i], num: i + 1 )
+                        ]else...[
+                          SizedBox( height: size.height * 0.5 -100 ),                           
+                          SpinKitSpinningLines(                          
+                            size: 200,
+                            color: Colors.green[900]!,                          
+                          )
+                        ]
+                      ],
+                    )  
                   ],
-                ))
+                ))               
               ],
             );
           },
@@ -61,13 +69,15 @@ class PlanesViajeScreen extends StatelessWidget {
 
 class _RutaCard extends StatelessWidget {
 
-  List<PlanViajeRespuesta> planes;
-
-  _RutaCard({Key? key, required this.planes}) : super(key: key);
+  final List<PlanViajeRespuesta> planes;
+  final List<LatLng> transbordos;
+  final int num;
+  const _RutaCard({Key? key, required this.planes, required this.transbordos, required this.num}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final mapBloc = BlocProvider.of<MapBloc>(context);
+    final lineaBloc = BlocProvider.of<LineasBloc>(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       height: 200,
@@ -104,11 +114,12 @@ class _RutaCard extends StatelessWidget {
           //     child: Image.asset( 'assets/icon/icon.png', fit: BoxFit.cover ),
           //   )
           // ),
-          const Positioned(
+          
+          Positioned(
               top: 10,
               left: 15,
-              child: Text('Plan 1 - Tiempo 27 min',
-                  style: TextStyle(
+              child: Text('Plan $num - Tiempo 27 min',
+                  style: const TextStyle(
                       color: Colors.blueAccent,
                       letterSpacing: 1.5,
                       fontSize: 17,
@@ -175,8 +186,10 @@ class _RutaCard extends StatelessWidget {
             child: GestureDetector(
               onTap: () async{
                 final navigator = Navigator.of( context );               
-                showLoadingMessage( context );                
-                await mapBloc.drawPlanViaje(planes);                                         
+                showLoadingMessage( context );
+                lineaBloc.add( OnShowBtnLimpiar() );                
+                await mapBloc.borrar();                           
+                await mapBloc.drawPlanViaje(planes, transbordos);                                         
                 navigator.pop();
                 navigator.pop();
               },

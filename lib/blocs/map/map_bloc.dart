@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
+import 'dart:ffi';
+
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -13,7 +14,7 @@ import 'package:maps_app/models/models.dart';
 import 'package:maps_app/services/services.dart';
 import 'package:maps_app/utilities/hex_color.dart';
 
-import '../../themes/themes.dart';
+
 
 part 'map_event.dart';
 part 'map_state.dart';
@@ -24,7 +25,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   GoogleMapController? _mapController;
   // StreamSubscription<LocationState>? locationStateSubscription;
   LatLng? mapCenter;
-  TrafficService trafficService;
+  TrafficService trafficService; 
   
   MapBloc({
     required this.locationBloc,
@@ -67,22 +68,22 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       min = LatLng( minAux.latitude, mayAux.longitude);
     }  
     
-    var kilometros = Geolocator.distanceBetween(start.latitude, start.longitude, end.latitude, end.longitude) / 1000;
+    // var kilometros = Geolocator.distanceBetween(start.latitude, start.longitude, end.latitude, end.longitude) / 1000;
     
-    if ( kilometros > 14.0) {
-      zoom = 160.0;
-    } 
-    if ( kilometros >= 3.0 && kilometros <= 14.0 ){     
-      zoom = 180.0;
-    }
-    if ( kilometros < 3.0 ){
-      zoom = 200.0;
-    } 
-    // Obtener Direcciones
+    // if ( kilometros > 14.0) {
+    //   zoom = 160.0;
+    // } 
+    // if ( kilometros >= 3.0 && kilometros <= 14.0 ){     
+    //   zoom = 180.0;
+    // }
+    // if ( kilometros < 3.0 ){
+    //   zoom = 200.0;
+    // } 
+    // Obtener Direcciones    
     Feature origen = await trafficService.getInformationByCoors(start);  
     Feature destino = await trafficService.getInformationByCoors(end); 
     add( OnOrigenDestinoTextEvent( [origen.text, destino.text] )); 
-    add( OnOrigenDestinoCoordEvent( [start, end] ))   ;
+    add( OnOrigenDestinoCoordEvent( [start, end] ));
 
     final startMaker = await getAssetImageMarker('assets/pin-green4.png');
     final endMaker = await getAssetImageMarker('assets/flag-red.png');
@@ -124,16 +125,18 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     add( const DisplayPolylinesEvent( {}, {} ) );
     // moveCamera( locationBloc.state.lastKnownLocation! );
     final cameraUpdate = CameraUpdate.newCameraPosition(
-      CameraPosition(            
-        target: locationBloc.state.lastKnownLocation!,            
-        zoom: 15
+      const CameraPosition(            
+        target: LatLng(-17.784312, -63.180449),            
+        zoom: 13.0
     ));
     _mapController?.animateCamera(cameraUpdate);
   }
+  borrar(){
+    add( const DisplayPolylinesEvent( {}, {} ) );       
+  }
 
-  Future drawPlanViaje( List<PlanViajeRespuesta> planes ) async {  
-
-
+  Future drawPlanViaje( List<PlanViajeRespuesta> rutas, List<LatLng> transbordos ) async {
+    // transbordos = LineaService.transbordos;
     // final myRoute = Polyline(
     //   polylineId: const PolylineId('route'),
     //   color: Colors.black,
@@ -141,11 +144,11 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     //   points: destination.points,
     //   startCap: Cap.roundCap,
     //   endCap: Cap.roundCap,      
-    // );
-    
+    // );    
 
     final startMaker = await getAssetImageMarker('assets/pin-green4.png');
     final endMaker = await getAssetImageMarker('assets/flag-red.png');
+    final person = await getAssetImageMarkerP('assets/person.png');
     // final startMaker = await getStartCustomMarker( tripDuration, 'Mi ubicación' );
     // final endMaker = await getEndCustomMarker( kms.toInt(), destination.endPlace.text );
     LatLng origen = state.origenDestinoCoord!.first;
@@ -160,29 +163,50 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       markerId: const MarkerId('end'),
       position: destino,
       icon: endMaker,      
-    );
-
-    final currentPolylines = Map<String, Polyline>.from( state.polylines );
-    // Map<String, Polyline> rutas = {};
+    );   
+    final currentPolylines = Map<String, Polyline>.from( state.polylines );    
     var cont = 1;
-    for ( var recorrido in planes ){
-      recorrido.puntos;
+    List<String> lineasN = [];
+    for ( var ruta in rutas ){   
+      lineasN.add( ruta.recorridoId.toString() );
       final myRoute = Polyline(
         polylineId: PolylineId( 'ruta $cont' ),
-        color: HexColor( recorrido.color ),
+        color: HexColor( ruta.color ),
         width: 5,
-        points: recorrido.puntos,
+        points: ruta.puntos,
         startCap: Cap.roundCap,
         endCap: Cap.roundCap,      
-      );
-      // rutas[ recorrido.linea ] = myRoute;
+      );      
       currentPolylines['ruta $cont'] = myRoute;
-      cont += 1;
-      print('AQUI SE DIBUJAN LOS POLILINES');
-      print(myRoute.points[1]);
-    }    
-    
+      cont += 1;      
+    }   
     final currentMarkers = Map<String, Marker>.from( state.markers );
+    if ( transbordos.length >= 2 ){
+      var cont2 = 1;
+      var cont3 = 0;
+      for ( var transbordo in transbordos ){      
+        if ( cont2 % 2 == 0 ){
+          final microMaker = await getMicroMarker( lineasN[cont3], 'color' );
+          final marker = Marker(
+          anchor: const Offset(0.0, 1),
+          markerId: MarkerId('marcador $cont2'),
+          position: transbordo,
+          icon: microMaker,      
+          );
+          currentMarkers['marcador $cont2'] = marker;
+          cont3++;
+        } 
+        if ( cont2 % 2 != 0 ){
+          final marker = Marker(
+          markerId: MarkerId('marcador $cont2'),
+          position: transbordo,
+          icon: person,      
+          );
+          currentMarkers['marcador $cont2'] = marker;
+        }             
+        cont2 += 1;      
+      }
+    }
     currentMarkers['start'] = startMarker;
     currentMarkers['end'] = endMarker;
     add( DisplayPolylinesEvent( currentPolylines, currentMarkers ) );
@@ -193,7 +217,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   void _onInitMap( OnMapInitialzedEvent event, Emitter<MapState> emit ) {
     _mapController = event.controller;
-    _mapController!.setMapStyle( jsonEncode( uberMapTheme ));
+    // _mapController!.setMapStyle( jsonEncode( uberMapTheme ));
     emit( state.copyWith( isMapInitialized: true ) );    
   }
 
@@ -276,10 +300,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     _mapController?.animateCamera(cameraUpdate);
   }
 
-  Future rutaMicro( List<LatLng> puntos ) async {
+  Future rutaMicro( List<LatLng> puntos, String color ) async {
     final myRoute = Polyline(
       polylineId: const PolylineId('route'),
-      color: Colors.black,
+      color: HexColor( color ),
       width: 5,
       points: puntos,
       startCap: Cap.roundCap,

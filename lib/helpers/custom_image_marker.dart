@@ -25,6 +25,17 @@ Future<BitmapDescriptor> getAssetImageMarker( String location) async {
   //   location
   // );
 }
+Future<BitmapDescriptor> getAssetImageMarkerP( String location) async {
+  // final imageCodec = await ui.instantiateImageCodec( resp.data, targetHeight: 150, targetWidth: 150 );
+  final bytes = await rootBundle.load( location );
+  final imageCodec = await ui.instantiateImageCodec( bytes.buffer.asUint8List(), targetHeight: 110, targetWidth: 90 );
+    final frame = await imageCodec.getNextFrame();
+    final data = await frame.image.toByteData( format: ui.ImageByteFormat.png );
+    if ( data == null ) {
+      return await getAssetImageMarker('assets/pin-green.png');
+    }    
+  return BitmapDescriptor.fromBytes( data.buffer.asUint8List() );  
+}
 
 Future<BitmapDescriptor> getNetworkImageMarker() async {
   final resp = await Dio()

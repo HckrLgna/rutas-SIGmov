@@ -19,6 +19,22 @@ Future<BitmapDescriptor> getStartCustomMarker( int minutes, String destination )
   return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
 
 }
+Future<BitmapDescriptor> getMicroMarker( String numero, String color ) async {
+
+  final recoder = ui.PictureRecorder();
+  final canvas = ui.Canvas( recoder );
+  const size = ui.Size(210, 150);
+
+  final startMarker = MicroMarkerPainter(numero: numero, color: color);
+  startMarker.paint(canvas, size);
+
+  final picture = recoder.endRecording();
+  final image = await picture.toImage(size.width.toInt(), size.height.toInt());
+  final byteData = await image.toByteData( format: ui.ImageByteFormat.png );
+
+  return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
+
+}
 
 
 Future<BitmapDescriptor> getEndCustomMarker( int kilometers, String destination ) async {

@@ -18,10 +18,13 @@ class LineasBloc extends Bloc<LineasEvent, LineasState> {
 
   LineasBloc({ required this.lineaService, required this.mapBloc }) : super( const LineasState() ) {   
     on<OnLineas>((event, emit) => emit( state.copyWith( lineas: event.lineas ) ) );
+    on<OnTransbordos>((event, emit) => emit( state.copyWith( listaTransbordos: event.listaTransbordos ) ) );
     on<OnShowPlanificador>((event, emit) => emit( state.copyWith( displayPlanificador: true ) ) );
     on<OnHidePlanificador>((event, emit) => emit( state.copyWith( displayPlanificador: false ) ) );
     on<OnCargandoPlanViaje>((event, emit) => emit( state.copyWith( cargandoPlanViaje: true ) ) );
     on<OnPlanViajeCargado>((event, emit) => emit( state.copyWith( cargandoPlanViaje: false ) ) );
+    on<OnShowBtnLimpiar>((event, emit) => emit( state.copyWith( showBtnLimpiar: true ) ) );
+    on<OnHideBtnLimpiar>((event, emit) => emit( state.copyWith( showBtnLimpiar: false ) ) );    
     on<OnPlanesViaje>((event, emit) => emit( state.copyWith( planesViaje: event.planes ) ) );
   }
 
@@ -29,21 +32,25 @@ class LineasBloc extends Bloc<LineasEvent, LineasState> {
     final resp = await lineaService.getLineasAll();     
     add( OnLineas( resp.lineas ) );
   }
-  Future<List<LatLng>> getRutaVuelta( String nro) async {
-    final resp = await lineaService.getRutaVueltaLinea( nro );   
-    final listaPuntos = resp.puntos.map( ( punto ) => LatLng( double.parse( punto.latitud ) , double.parse( punto.longitud )) ).toList();
-    return listaPuntos;
+  Future getRutaVuelta( String nro) async {
+    final resp = await lineaService.getRutaVueltaLinea( nro );
+    final color = await lineaService.getRutaVueltaColorLinea( nro );   
+    List<LatLng> listaPuntos = resp.puntos.map( ( punto ) => LatLng( double.parse( punto.latitud ) , double.parse( punto.longitud )) ).toList();
+    return [ listaPuntos, color ];
   }
-  Future<List<LatLng>> getRutaIda( String nro) async {
-    final resp = await lineaService.getRutaIdaLinea( nro );   
-    final listaPuntos = resp.puntos.map( ( punto ) => LatLng( double.parse( punto.latitud ) , double.parse( punto.longitud )) ).toList();
-    return listaPuntos;
+  Future getRutaIda( String nro) async {
+    final resp = await lineaService.getRutaIdaLinea( nro );    
+    final color = await lineaService.getRutaIdaColorLinea( nro );    
+    List<LatLng> listaPuntos = resp.puntos.map( ( punto ) => LatLng( double.parse( punto.latitud ) , double.parse( punto.longitud )) ).toList();    
+    return [ listaPuntos, color ];
   }
 
   Future<void> getPlanViaje() async {
     LatLng origen = mapBloc.state.origenDestinoCoord!.first;
     LatLng destino = mapBloc.state.origenDestinoCoord!.last;    
     final resp = await lineaService.getPlanViaje(origen, destino);    
-    add( OnPlanesViaje( resp ) );    
-  }
+    add( OnPlanesViaje( resp[0] ) );
+    add( OnTransbordos( resp[1] ) );    
+  }  
+
 }

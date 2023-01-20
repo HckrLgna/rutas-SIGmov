@@ -67,11 +67,11 @@ class _SearchBarBody extends StatelessWidget {
             children: [
               Container(
                 margin: const EdgeInsets.only(top: 15),
-                padding: const EdgeInsets.symmetric(horizontal: 30),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 width: double.infinity,
                 child: Material(
                   elevation: 7.0,
-                  color: const Color.fromARGB(220, 255, 255, 255),
+                  color: Color.fromARGB(255, 255, 255, 255),
                   shape: OutlineInputBorder(
                       borderSide:
                           const BorderSide(color: Colors.transparent, width: 1),
@@ -90,9 +90,9 @@ class _SearchBarBody extends StatelessWidget {
                     controller: TextEditingController()
                       ..text = state.origenDestinoText?.first ?? ' ',
                     style: const TextStyle(
-                        fontSize: 17.0,
+                        fontSize: 18.0,
                         letterSpacing: 1.0,
-                        overflow: TextOverflow.ellipsis , fontStyle: FontStyle.italic),
+                        overflow: TextOverflow.ellipsis /* , fontStyle: FontStyle.italic */),
                     textAlignVertical: TextAlignVertical.bottom,
                     decoration: const InputDecoration(
                       hintText: 'Ubicación actual',
@@ -110,11 +110,11 @@ class _SearchBarBody extends StatelessWidget {
               ),
               Container(
                 margin: const EdgeInsets.only(top: 15),
-                padding: const EdgeInsets.symmetric(horizontal: 30),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 width: double.infinity,
                 child: Material(
                   elevation: 7.0,
-                  color: const Color.fromARGB(220, 255, 255, 255),
+                  color: Color.fromARGB(255, 255, 255, 255),
                   shape: OutlineInputBorder(
                       borderSide:
                           const BorderSide(color: Colors.transparent, width: 1),
@@ -132,7 +132,7 @@ class _SearchBarBody extends StatelessWidget {
                     },
                     controller: TextEditingController()
                       ..text = state.origenDestinoText?.last ?? ' ',
-                    style: const TextStyle(fontSize: 17.0, letterSpacing: 1.0, fontStyle: FontStyle.italic),
+                    style: const TextStyle(fontSize: 18.0, letterSpacing: 1.0/* , fontStyle: FontStyle.italic */),
                     textAlignVertical: TextAlignVertical.bottom,
                     decoration: const InputDecoration(
                       hintText: 'Hipermaxi Sur',

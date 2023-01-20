@@ -10,8 +10,8 @@ class BtnRecorridoMicro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final mapBloc = BlocProvider.of<MapBloc>(context);    
-    final lineaBloc = BlocProvider.of<LineasBloc>(context);
+    final mapBloc = BlocProvider.of<MapBloc>(context);    
+    final lineaBloc = BlocProvider.of<LineasBloc>(context);    
     lineaBloc.getLineas();   
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -19,7 +19,9 @@ class BtnRecorridoMicro extends StatelessWidget {
         backgroundColor: Colors.white,
         maxRadius: 30,
         child: GestureDetector(
-          onTap: (() {                      
+          onTap: (() {
+            lineaBloc.add(OnHidePlanificador());
+            mapBloc.borrar();                                  
             Navigator.push( context, pageTransitionCombined( const ListaMicrosScreen() ));            
           }),
           child: ClipRRect(

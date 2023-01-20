@@ -13,8 +13,7 @@ class BtnPlanificadorViaje extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {    
-    final lineaBloc = BlocProvider.of<LineasBloc>(context);   
-    final locationBloc = BlocProvider.of<LocationBloc>(context);
+    final lineaBloc = BlocProvider.of<LineasBloc>(context);    
     final mapBloc = BlocProvider.of<MapBloc>(context);    
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -23,15 +22,15 @@ class BtnPlanificadorViaje extends StatelessWidget {
         maxRadius: 30,
         child: GestureDetector(
           onTap: (() async {
+            lineaBloc.add( OnHideBtnLimpiar() );
             final navigator = Navigator.of(context);       
             if ( lineaBloc.state.displayPlanificador ){
               lineaBloc.add(OnHidePlanificador());
               mapBloc.hideMarcadores();              
             } else {
               showLoadingMessage(context);
-              final start = locationBloc.state.lastKnownLocation;
-              if ( start == null ) return;
-              LatLng end =  const LatLng(-17.78342285804481, -63.18209007735924);
+              LatLng start = const LatLng(-17.770899, -63.168595);            
+              LatLng end =  const LatLng(-17.798124, -63.192422);
               await mapBloc.showMarcadores( start, end );                         
               lineaBloc.add(OnShowPlanificador());
               navigator.pop();

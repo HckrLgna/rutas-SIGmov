@@ -45,19 +45,22 @@ class _MapScreenState extends State<MapScreen> {
                 polylines.removeWhere((key, value) => key == 'myRoute');
               }
 
-              return SingleChildScrollView(
-                child: Stack(
-                  children: [
-                    MapView( 
-                      initialLocation: locationState.lastKnownLocation!,
-                      polylines: polylines.values.toSet(), 
-                      markers: mapState.markers.values.toSet(),
-                    ),                    
-                    const SearchBar2(), 
-                    // const ManualMarker()     
-                    // const BtnPlanesViaje()   
-                  ]  
-                ),
+              return Stack(
+                children: [
+                  MapView( 
+                    initialLocation: locationState.lastKnownLocation!,
+                    polylines: polylines.values.toSet(), 
+                    markers: mapState.markers.values.toSet(),
+                  ),                    
+                  const SearchBar2(), 
+                  const Positioned(
+                    bottom: 20,
+                    left: 15, 
+                    child: BtnBorrar() 
+                  ),
+                  // const ManualMarker()     
+                  // const BtnPlanesViaje()   
+                ]  
               );
             },
           );

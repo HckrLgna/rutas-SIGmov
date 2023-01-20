@@ -33,7 +33,8 @@ class ListaMicrosScreen extends StatelessWidget {
                       )                      
                     )                                       
                   else
-                    for ( var linea in state.lineas! )                      
+                    // for ( var linea in state.lineas! )                                       
+                    for ( var i = 0; i < state.lineas!.length; i++ )                                       
                       Padding(
                         padding: const EdgeInsets.all( 15 ),
                         child: Card(
@@ -43,9 +44,9 @@ class ListaMicrosScreen extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.only( top: 20, bottom: 5 ),
                             child: CustomListTile(
-                              imagen: 'assets/linea96.png',
-                              title: 'Linea Nº ${linea.name.replaceAll( RegExp(r'[^0-9]'),'' )}',
-                              nro: linea.name.replaceAll( RegExp(r'[^0-9]'),'' ),
+                              imagen: 'assets/${int.parse(state.lineas![i].name.replaceAll( RegExp(r'[^0-9]'),'' ))}.png',
+                              title: 'Linea Nº ${state.lineas![i].name.replaceAll( RegExp(r'[^0-9]'),'' )}',
+                              nro: state.lineas![i].name.replaceAll( RegExp(r'[^0-9]'),'' ),
                             ),
                           ),
                         ),
@@ -181,8 +182,9 @@ class _Contenido extends StatelessWidget {
               onPressed: () async {
                 final navigator = Navigator.of( context );               
                 showLoadingMessage( context );                
-                final puntos = await lineaBloc.getRutaIda( nro );               
-                await mapBloc.rutaMicro( puntos );                            
+                final datoLinea = await lineaBloc.getRutaIda( nro );
+                lineaBloc.add( OnShowBtnLimpiar() );                             
+                await mapBloc.rutaMicro( datoLinea[0], datoLinea[1] );                            
                 navigator.pop();
                 navigator.pop();
               },
@@ -198,8 +200,9 @@ class _Contenido extends StatelessWidget {
               onPressed: () async {
                 final navigator = Navigator.of( context );               
                 showLoadingMessage( context );                
-                final puntos = await lineaBloc.getRutaVuelta( nro );               
-                await mapBloc.rutaMicro( puntos );                            
+                final datoLinea = await lineaBloc.getRutaVuelta( nro );
+                lineaBloc.add( OnShowBtnLimpiar() );               
+                await mapBloc.rutaMicro( datoLinea[0], datoLinea[1] );                            
                 navigator.pop();
                 navigator.pop();
               },
